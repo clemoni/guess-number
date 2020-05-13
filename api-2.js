@@ -34,6 +34,21 @@ function getRandomNumber(min, max) {
 }
 
 /**
+ * Scratch number that has been already guessed by player.
+ * @param {int} guessedNumber
+ */
+function scratchUsedNumber(guessedNumber) {
+  const spanIdNumber = "num" + guessedNumber;
+  const helperListUI = document.querySelectorAll("p.helper-list span");
+  helperListUI.forEach(function (span) {
+    if (span.id == spanIdNumber) {
+      span.style.color = "#686463";
+      span.style.textDecoration = "line-through";
+    }
+  });
+}
+
+/**
  * Variables declarations
  */
 
@@ -41,8 +56,9 @@ function getRandomNumber(min, max) {
 let min = 15,
   max = 20,
   winningNumb = getRandomNumber(min, max),
-  chancesGiven = 2,
-  attemptLeft = 0;
+  chancesGiven = 3,
+  attemptLeft = 0,
+  numbList = "";
 
 //UI Element
 const gameUI = document.querySelector("#game"),
@@ -55,6 +71,21 @@ const gameUI = document.querySelector("#game"),
 //assin UI Min max
 minNumUI.textContent = min;
 maxNumUI.textContent = max;
+
+const helper = document.querySelector(".helper h6");
+// generate a new element span number from min to max
+for (let i = min; i <= max; i++) {
+  if (i == max) {
+    numbList += `<span id=num${i}>${i}</span>`;
+  } else {
+    numbList += `<span id=num${i}>${i}</span> - `;
+  }
+}
+
+let helperList = document.createElement("p");
+helperList.className = "helper-list";
+helperList.innerHTML = numbList;
+helper.appendChild(helperList);
 
 /** playAgain eventListener
  *   Need to use a parent since
@@ -73,6 +104,11 @@ gameUI.addEventListener("mousedown", function (e) {
     // history.go(0);
   }
 });
+
+/**
+ * Main event, each click new turn of the game
+ * max turn per game 3
+ */
 
 guessBtn.addEventListener("click", function () {
   // remove possible error message
@@ -99,6 +135,7 @@ guessBtn.addEventListener("click", function () {
   } else {
     // new attempt incremented
     attemptLeft++;
+    scratchUsedNumber(guessedNumber);
 
     //What the value guessedNumber
     // is hte value correspondung

@@ -1,26 +1,13 @@
-// Game values
-let min = 1,
-  max = 10,
-  winningNumb = 2,
-  chancesGiven = 3,
-  attemptLeft = 0;
+/**
+ * FUNCTION
+ */
 
-//UI Element
-const gameUI = document.querySelector("#game"),
-  minNumUI = document.querySelector(".min-num"),
-  maxNumUI = document.querySelector(".max-num"),
-  guessBtn = document.querySelector("#guess-btn"),
-  guessInput = document.querySelector("#guess-input"),
-  message = document.querySelector(".message");
-
-//assin UI Min max
-minNumUI.textContent = min;
-maxNumUI.textContent = max;
-
-//functions
-
-// personalised messaged fuction with specific color code
-function sentError(parseMessage, status) {
+/**
+ * Personalised messaged fuction with specific color code
+ * @param {string} parseMessage Message to send
+ * @param {string} status Type of message: fail, warning, success
+ */
+function sentMessage(parseMessage, status) {
   const statusDic = {
     fail: { color: "rgb(240,67,67)", background: "rgb(249,179,179)" },
     warning: { color: "rgb(220,121,0)", background: "rgb(242,193,133)" },
@@ -36,6 +23,56 @@ function sentError(parseMessage, status) {
   message.style.border = `2px solid ${statusDic[status].color}`;
   message.style.color = statusDic[status].color;
 }
+
+/**
+ * Generate ramdom number
+ * @param {int} min
+ * @param {int} max
+ */
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+/**
+ * Variables declarations
+ */
+
+// Game values
+let min = 15,
+  max = 20,
+  winningNumb = getRandomNumber(min, max),
+  chancesGiven = 2,
+  attemptLeft = 0;
+
+//UI Element
+const gameUI = document.querySelector("#game"),
+  minNumUI = document.querySelector(".min-num"),
+  maxNumUI = document.querySelector(".max-num"),
+  guessBtn = document.querySelector("#guess-btn"),
+  guessInput = document.querySelector("#guess-input"),
+  message = document.querySelector(".message");
+
+//assin UI Min max
+minNumUI.textContent = min;
+maxNumUI.textContent = max;
+
+/** playAgain eventListener
+ *   Need to use a parent since
+ *  the btn "plain again" has been
+ * created actively with JS
+ * eventlistener on the parent
+ * */
+
+gameUI.addEventListener("mousedown", function (e) {
+  console.log(e.target.id);
+  //filter to the event to be only on the btn
+  if (e.target.id == "play-again") {
+    // message.style.display = "none";
+    location.reload(true);
+    //reload the page
+    // history.go(0);
+  }
+});
 
 guessBtn.addEventListener("click", function () {
   // remove possible error message
@@ -55,46 +92,55 @@ guessBtn.addEventListener("click", function () {
    */
   if (isNaN(guessedNumber) || guessedNumber < min || guessedNumber > max) {
     // creat error message specifi to situation
-    sentError(
+    sentMessage(
       (parseMessage = `Unexpected value<br/>Please try again.`),
       (status = "fail")
     );
   } else {
-    console.log("let's play, add a new turn");
     // new attempt incremented
     attemptLeft++;
 
     //What the value guessedNumber
     // is hte value correspondung
     if (guessedNumber != winningNumb && attemptLeft == chancesGiven) {
-      sentError(
+      sentMessage(
         (parseMessage = `GAME OVER!!!<br/>The expected value was ${winningNumb}.`),
         (status = "fail")
       );
       guessInput.disabled = true;
-      guessBtn.disabled = true;
-    } else if (guessedNumber != winningNumb && attemptLeft != chancesGiven) {
-      console.log(
-        "Nope but you can trye " +
-          (chancesGiven - attemptLeft) +
-          " chances left"
-      );
+      // guessBtn.disabled = true;
 
-      sentError(
+      /**
+       * Reload the once Game over
+       */
+      // Reload the game
+      guessBtn.value = "Play again.";
+      //appen class to other class
+      guessBtn.id = "play-again";
+    } else if (guessedNumber != winningNumb && attemptLeft != chancesGiven) {
+      sentMessage(
         (parseMessage = `Oups !! It was close <br/>You have ${
           chancesGiven - attemptLeft
-        }.`),
+        } chance(s) left to win.`),
         (status = "warning")
       );
 
-      guessInput.value = " ";
+      guessInput.value = "";
     } else if (guessedNumber == winningNumb) {
-      sentError(
+      sentMessage(
         (parseMessage = `Well done !!! <br/>We have a winner!`),
         (status = "success")
       );
       guessInput.disabled = true;
-      guessBtn.disabled = true;
+      /**
+       * Reload the once Game over
+       */
+      // Reload the game
+      guessBtn.value = "Play again.";
+      //appen class to other class
+      guessBtn.id = "play-again";
+      // guessBtn.disabled = true;
     }
   }
 });
+sentMessage("lalal");

@@ -143,4 +143,3 @@ guessBtn.addEventListener("click", function () {
     }
   }
 });
-sentMessage("lalal");
